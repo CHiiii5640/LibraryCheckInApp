@@ -1,0 +1,1295 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>圖書館打卡記錄</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+  <style>
+    :root {
+      --primary-color: #4562A8;
+      --success-color: #34C759;
+      --warning-color: #FF9500;
+      --danger-color: #FF3B30;
+      --background-color: #F2F2F7;
+      --card-background: #FFFFFF;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Helvetica Neue', sans-serif;
+      background-color: var(--background-color);
+      margin: 0;
+      padding: 0;
+      color: #000000;
+    }
+
+    .app-container {
+      max-width: 414px;
+      margin: 0 auto;
+      background: var(--background-color);
+      min-height: 100vh;
+      position: relative;
+      padding-bottom: 60px; /* 為底部導航欄留出空間 */
+    }
+
+    .status-bar {
+      background: var(--card-background);
+      padding: 12px 16px;
+      font-size: 14px;
+      color: #666;
+    }
+
+    .nav-bar {
+      background: var(--card-background);
+      padding: 16px;
+      font-size: 17px;
+      font-weight: 600;
+      text-align: center;
+      border-bottom: 1px solid rgba(0,0,0,0.1);
+    }
+
+    .card {
+      background: var(--card-background);
+      border-radius: 16px;
+      padding: 20px;
+      margin: 16px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+    }
+
+    .clock-status {
+      text-align: center;
+      padding: 24px 0;
+    }
+
+    .clock-time {
+      font-size: 48px;
+      font-weight: 300;
+      color: var(--primary-color);
+      margin-bottom: 8px;
+    }
+
+    .clock-date {
+      font-size: 15px;
+      color: #666;
+    }
+
+    .location-card {
+      display: flex;
+      align-items: center;
+      padding: 16px;
+      background: #F8F8F8;
+      border-radius: 12px;
+      margin-bottom: 16px;
+    }
+
+    .location-icon {
+      width: 40px;
+      height: 40px;
+      background: var(--primary-color);
+      border-radius: 20px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      margin-right: 12px;
+    }
+
+    .clock-button {
+      background: var(--success-color);
+      color: white;
+      border: none;
+      border-radius: 24px;
+      padding: 16px 32px;
+      font-size: 17px;
+      font-weight: 600;
+      width: 100%;
+      margin-top: 16px;
+    }
+
+    .clock-button:disabled {
+      background: #E5E5EA;
+      color: #8E8E93;
+    }
+
+    .status-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 12px;
+      margin-top: 16px;
+    }
+
+    .status-item {
+      background: #F8F8F8;
+      border-radius: 12px;
+      padding: 16px;
+      text-align: center;
+    }
+
+    .status-value {
+      font-size: 24px;
+      font-weight: 600;
+      color: var(--primary-color);
+    }
+
+    .status-label {
+      font-size: 13px;
+      color: #666;
+      margin-top: 4px;
+    }
+
+    .tab-bar {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      background: var(--card-background);
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      padding: 12px 0;
+      border-top: 1px solid rgba(0,0,0,0.1);
+      z-index: 100;
+    }
+
+    .tab-item {
+      text-align: center;
+      color: #8E8E93;
+      font-size: 10px;
+      cursor: pointer;
+      transition: color 0.2s;
+    }
+
+    .tab-item:hover {
+      opacity: 0.8;
+    }
+
+    .tab-item:active {
+      opacity: 0.6;
+    }
+
+    .tab-item.active {
+      color: var(--primary-color);
+    }
+
+    .tab-item i {
+      font-size: 22px;
+      margin-bottom: 4px;
+    }
+
+    .page {
+      display: none;
+    }
+
+    .page.active {
+      display: block;
+    }
+
+    /* 頁面特定樣式 */
+    .calendar-page .calendar-grid {
+      display: grid;
+      grid-template-columns: repeat(7, 1fr);
+      gap: 8px;
+      margin-top: 16px;
+    }
+
+    .calendar-page .day-item {
+      background: #F8F8F8;
+      border-radius: 8px;
+      padding: 8px 0;
+      text-align: center;
+      font-size: 14px;
+      position: relative;
+    }
+
+    .calendar-page .day-item.today {
+      background: var(--primary-color);
+      color: white;
+    }
+
+    .calendar-page .day-item.checked {
+      border: 2px solid var(--success-color);
+    }
+
+    .calendar-page .day-item.checked:after {
+      content: '✓';
+      position: absolute;
+      top: 2px;
+      right: 4px;
+      font-size: 10px;
+      color: var(--success-color);
+    }
+
+    .calendar-page .day-item.today.checked:after {
+      color: white;
+    }
+
+    .stats-page .chart {
+      height: 200px;
+      background: #F8F8F8;
+      border-radius: 12px;
+      margin-top: 16px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .study-log {
+      margin-top: 16px;
+      max-height: 300px;
+      overflow-y: auto;
+    }
+
+    .study-item {
+      border-left: 2px solid var(--primary-color);
+      padding-left: 16px;
+      margin-bottom: 16px;
+    }
+
+    .study-item:last-child {
+      margin-bottom: 0;
+    }
+
+    .study-date {
+      font-weight: 500;
+      font-size: 15px;
+    }
+
+    .study-time {
+      font-size: 13px;
+      color: #666;
+      margin-top: 4px;
+    }
+
+    .study-note {
+      font-size: 13px;
+      color: #666;
+      margin-top: 4px;
+      font-style: italic;
+    }
+
+    .streak-badge {
+      display: inline-block;
+      background: var(--primary-color);
+      color: white;
+      padding: 4px 8px;
+      border-radius: 12px;
+      font-size: 12px;
+      margin-left: 8px;
+    }
+    
+    /* 表單元素樣式 */
+    .form-control {
+      border-radius: 10px;
+      border: 1px solid #E5E5EA;
+      padding: 10px 15px;
+      font-size: 15px;
+    }
+    
+    .form-control:focus {
+      border-color: var(--primary-color);
+      box-shadow: 0 0 0 0.2rem rgba(69, 98, 168, 0.25);
+    }
+    
+    .btn-light {
+      border-radius: 10px;
+      border: 1px solid #E5E5EA;
+      background-color: #F8F8F8;
+    }
+    
+    .btn-light:hover {
+      background-color: #E5E5EA;
+    }
+    
+    .location-option {
+      border-radius: 10px;
+      margin-bottom: 5px;
+      padding: 12px 15px;
+    }
+    
+    .location-option:hover {
+      background-color: #F8F8F8;
+    }
+    
+    .modal-content {
+      border-radius: 16px;
+    }
+    
+    .modal-header {
+      border-bottom: 1px solid #E5E5EA;
+    }
+    
+    #useCurrentTimeBtn {
+      height: 38px;
+      width: 50px;
+      font-size: 13px;
+      border-radius: 10px;
+      padding: 0;
+    }
+    
+    #timeSelector {
+      background: #F8F8F8;
+      border-radius: 12px;
+      padding: 16px;
+    }
+    
+    #studyNote {
+      background: #F8F8F8;
+      margin-bottom: 0 !important;
+    }
+    
+    #changeLocationBtn {
+      border-radius: 50%;
+      width: 32px;
+      height: 32px;
+      padding: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+  </style>
+</head>
+<body>
+  <div class="app-container">
+    <!-- 狀態列 -->
+    <div class="status-bar">
+      <i class="fas fa-signal"></i>
+      <span class="float-end">
+        <i class="fas fa-wifi"></i>
+        <i class="fas fa-battery-full ms-2"></i>
+      </span>
+    </div>
+
+    <!-- 導航列 -->
+    <div class="nav-bar" id="pageTitle">
+      圖書館打卡
+    </div>
+
+    <!-- 首頁 -->
+    <div class="page active" id="homePage">
+      <!-- 主要內容 -->
+      <div class="card">
+        <div class="clock-status">
+          <div class="clock-time" id="currentTime">14:30:25</div>
+          <div class="clock-date" id="currentDate">2024年3月21日 星期四</div>
+        </div>
+
+        <div class="location-card" id="locationSelector">
+          <div class="location-icon">
+            <i class="fas fa-book"></i>
+          </div>
+          <div style="flex-grow: 1;">
+            <div style="font-weight: 500;">學習位置</div>
+            <div style="font-size: 13px; color: #666;" id="selectedLocation">校區中央圖書館</div>
+          </div>
+          <div style="margin-left: 10px;">
+            <button class="btn btn-sm btn-light" id="changeLocationBtn">
+              <i class="fas fa-edit"></i>
+            </button>
+          </div>
+        </div>
+
+        <div class="mb-3" id="timeSelector" style="display: flex; align-items: center; margin-top: 16px;">
+          <div style="flex-grow: 1;">
+            <label style="font-weight: 500; font-size: 15px; margin-bottom: 5px;">學習時間</label>
+            <input type="datetime-local" class="form-control" id="studyTimeInput">
+          </div>
+          <div style="width: 60px; text-align: center; font-size: 14px; color: #666;">
+            <button class="btn btn-sm btn-light" id="useCurrentTimeBtn" style="margin-top: 24px;">
+              現在
+            </button>
+          </div>
+        </div>
+
+        <input type="text" class="form-control mb-3" id="studyNote" placeholder="備註：今天學習了什麼？" style="margin-top: 16px;">
+
+        <button class="clock-button" id="clockButton">
+          <i class="fas fa-book-reader me-2"></i>記錄學習
+        </button>
+      </div>
+
+      <!-- 狀態卡片 -->
+      <div class="card">
+        <div style="font-weight: 600; margin-bottom: 12px;">學習統計</div>
+        <div class="status-grid">
+          <div class="status-item">
+            <div class="status-value">15</div>
+            <div class="status-label">本月到館次數</div>
+          </div>
+          <div class="status-item">
+            <div class="status-value">5</div>
+            <div class="status-label">目前連續天數</div>
+          </div>
+          <div class="status-item">
+            <div class="status-value">45</div>
+            <div class="status-label">本學期總次數</div>
+          </div>
+          <div class="status-item">
+            <div class="status-value">12</div>
+            <div class="status-label">最長連續記錄</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 日曆頁面 -->
+    <div class="page calendar-page" id="calendarPage">
+      <div class="card">
+        <div style="font-weight: 600; margin-bottom: 12px;">2024年3月</div>
+        <div class="calendar-grid">
+          <div class="day-item">一</div>
+          <div class="day-item">二</div>
+          <div class="day-item">三</div>
+          <div class="day-item">四</div>
+          <div class="day-item">五</div>
+          <div class="day-item">六</div>
+          <div class="day-item">日</div>
+          
+          <div class="day-item"></div>
+          <div class="day-item"></div>
+          <div class="day-item"></div>
+          <div class="day-item"></div>
+          <div class="day-item checked">1</div>
+          <div class="day-item checked">2</div>
+          <div class="day-item">3</div>
+          
+          <div class="day-item checked">4</div>
+          <div class="day-item checked">5</div>
+          <div class="day-item checked">6</div>
+          <div class="day-item">7</div>
+          <div class="day-item checked">8</div>
+          <div class="day-item">9</div>
+          <div class="day-item">10</div>
+          
+          <div class="day-item checked">11</div>
+          <div class="day-item checked">12</div>
+          <div class="day-item">13</div>
+          <div class="day-item checked">14</div>
+          <div class="day-item checked">15</div>
+          <div class="day-item checked">16</div>
+          <div class="day-item">17</div>
+          
+          <div class="day-item checked">18</div>
+          <div class="day-item checked">19</div>
+          <div class="day-item checked">20</div>
+          <div class="day-item today checked">21</div>
+          <div class="day-item">22</div>
+          <div class="day-item">23</div>
+          <div class="day-item">24</div>
+          
+          <div class="day-item">25</div>
+          <div class="day-item">26</div>
+          <div class="day-item">27</div>
+          <div class="day-item">28</div>
+          <div class="day-item">29</div>
+          <div class="day-item">30</div>
+          <div class="day-item">31</div>
+        </div>
+      </div>
+      
+      <div class="card">
+        <div style="font-weight: 600; margin-bottom: 12px;">最近到館記錄</div>
+        <div class="study-log">
+          <div class="study-item">
+            <div class="study-date">3月21日（今天）<span class="streak-badge">連續5天</span></div>
+            <div class="study-time">到館時間：09:30</div>
+            <div class="study-note">備註：準備期中考，複習線性代數</div>
+          </div>
+          
+          <div class="study-item">
+            <div class="study-date">3月20日</div>
+            <div class="study-time">到館時間：10:15</div>
+            <div class="study-note">備註：撰寫歷史論文</div>
+          </div>
+          
+          <div class="study-item">
+            <div class="study-date">3月19日</div>
+            <div class="study-time">到館時間：14:00</div>
+            <div class="study-note">備註：英語口語練習</div>
+          </div>
+          
+          <div class="study-item">
+            <div class="study-date">3月18日</div>
+            <div class="study-time">到館時間：09:05</div>
+            <div class="study-note">備註：完成程式作業</div>
+          </div>
+          
+          <div class="study-item">
+            <div class="study-date">3月17日</div>
+            <div class="study-time">到館時間：13:30</div>
+            <div class="study-note">備註：小組討論準備</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 統計頁面 -->
+    <div class="page stats-page" id="statsPage">
+      <div class="card">
+        <div style="font-weight: 600; margin-bottom: 12px;">學習趨勢</div>
+        <div class="chart">
+          <i class="fas fa-chart-line" style="font-size: 48px; color: #C7C7CC;"></i>
+        </div>
+        <div style="font-size: 13px; color: #666; text-align: center; margin-top: 8px;">
+          顯示最近30天到館記錄統計
+        </div>
+      </div>
+      
+      <div class="card">
+        <div style="font-weight: 600; margin-bottom: 12px;">學習分析</div>
+        <div class="status-grid">
+          <div class="status-item">
+            <div class="status-value">15</div>
+            <div class="status-label">本月到館</div>
+          </div>
+          <div class="status-item">
+            <div class="status-value">71%</div>
+            <div class="status-label">出席率</div>
+          </div>
+          <div class="status-item">
+            <div class="status-value">5</div>
+            <div class="status-label">連續天數</div>
+          </div>
+          <div class="status-item">
+            <div class="status-value">12</div>
+            <div class="status-label">最長連續</div>
+          </div>
+        </div>
+      </div>
+      
+      <div class="card">
+        <div style="font-weight: 600; margin-bottom: 12px;">到館時段分析</div>
+        <div style="display: flex; justify-content: space-between; margin-top: 16px;">
+          <div style="text-align: center; flex: 1;">
+            <div style="font-size: 24px; font-weight: 600; color: var(--primary-color);">40%</div>
+            <div style="font-size: 13px; color: #666;">上午</div>
+          </div>
+          <div style="text-align: center; flex: 1;">
+            <div style="font-size: 24px; font-weight: 600; color: var(--primary-color);">35%</div>
+            <div style="font-size: 13px; color: #666;">下午</div>
+          </div>
+          <div style="text-align: center; flex: 1;">
+            <div style="font-size: 24px; font-weight: 600; color: var(--primary-color);">25%</div>
+            <div style="font-size: 13px; color: #666;">晚上</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 底部標籤欄 -->
+    <div class="tab-bar">
+      <div class="tab-item active" data-page="homePage">
+        <i class="fas fa-home"></i><br>
+        首頁
+      </div>
+      <div class="tab-item" data-page="calendarPage">
+        <i class="fas fa-calendar-alt"></i><br>
+        日曆
+      </div>
+      <div class="tab-item" data-page="statsPage">
+        <i class="fas fa-chart-line"></i><br>
+        統計
+      </div>
+    </div>
+  </div>
+
+  <!-- 位置選擇彈窗 -->
+  <div class="modal fade" id="locationModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">選擇位置</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <div class="list-group">
+            <button type="button" class="list-group-item list-group-item-action location-option" data-location="校區中央圖書館">
+              <i class="fas fa-book-open me-2"></i>校區中央圖書館
+            </button>
+            <button type="button" class="list-group-item list-group-item-action location-option" data-location="理工學院圖書館">
+              <i class="fas fa-flask me-2"></i>理工學院圖書館
+            </button>
+            <button type="button" class="list-group-item list-group-item-action location-option" data-location="社科院圖書館">
+              <i class="fas fa-landmark me-2"></i>社科院圖書館
+            </button>
+            <button type="button" class="list-group-item list-group-item-action location-option" data-location="商學院圖書館">
+              <i class="fas fa-chart-line me-2"></i>商學院圖書館
+            </button>
+            <button type="button" class="list-group-item list-group-item-action location-option" data-location="醫學院圖書館">
+              <i class="fas fa-heartbeat me-2"></i>醫學院圖書館
+            </button>
+            <button type="button" class="list-group-item list-group-item-action location-option" data-location="法學院圖書館">
+              <i class="fas fa-gavel me-2"></i>法學院圖書館
+            </button>
+            <div class="mt-3">
+              <input type="text" class="form-control" id="customLocation" placeholder="輸入其他位置...">
+              <button class="btn btn-primary w-100 mt-2" id="addCustomLocation">新增位置</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@3.9.1/dist/chart.min.js"></script>
+  <script>
+    // 數據存儲管理
+    const studyRecordManager = {
+      records: [],
+      
+      // 初始化從本地存儲加載數據
+      init: function() {
+        const savedRecords = localStorage.getItem('studyRecords');
+        if (savedRecords) {
+          this.records = JSON.parse(savedRecords);
+        }
+        this.updateStats();
+        this.updateCalendar();
+        this.renderRecentRecords();
+        this.renderCharts();
+      },
+      
+      // 添加新記錄
+      addRecord: function(record) {
+        // 添加唯一ID和時間戳
+        record.id = Date.now();
+        record.timestamp = new Date().toISOString();
+        this.records.push(record);
+        this.saveToLocalStorage();
+        this.updateStats();
+        this.updateCalendar();
+        this.renderRecentRecords();
+        this.renderCharts();
+        
+        // 檢查連續打卡並顯示成就
+        const streak = this.getCurrentStreak();
+        if (streak >= 3) {
+          showNotification(`🎉 恭喜達成連續${streak}天學習！`, 'success');
+        }
+      },
+      
+      // 保存到本地存儲
+      saveToLocalStorage: function() {
+        localStorage.setItem('studyRecords', JSON.stringify(this.records));
+      },
+      
+      // 獲取最近記錄
+      getRecentRecords: function(limit = 5) {
+        return this.records
+          .sort((a, b) => new Date(b.date) - new Date(a.date))
+          .slice(0, limit);
+      },
+      
+      // 獲取特定日期的記錄
+      getRecordsByDate: function(date) {
+        const dateStr = new Date(date).toLocaleDateString('zh-Hant');
+        return this.records.filter(record => 
+          new Date(record.date).toLocaleDateString('zh-Hant') === dateStr
+        );
+      },
+      
+      // 獲取當前月的記錄
+      getCurrentMonthRecords: function() {
+        const now = new Date();
+        const currentMonth = now.getMonth();
+        const currentYear = now.getFullYear();
+        
+        return this.records.filter(record => {
+          const recordDate = new Date(record.date);
+          return recordDate.getMonth() === currentMonth && 
+                 recordDate.getFullYear() === currentYear;
+        });
+      },
+      
+      // 計算當前連續天數
+      getCurrentStreak: function() {
+        if (this.records.length === 0) return 0;
+        
+        const sortedDates = [...new Set(
+          this.records.map(record => 
+            new Date(record.date).toLocaleDateString('zh-Hant')
+          )
+        )].sort((a, b) => new Date(b) - new Date(a));
+        
+        let streak = 1;
+        const today = new Date().toLocaleDateString('zh-Hant');
+        const yesterday = new Date(Date.now() - 86400000).toLocaleDateString('zh-Hant');
+        
+        // 先檢查今天是否打卡
+        if (sortedDates[0] !== today && sortedDates[0] !== yesterday) {
+          return 0; // 如果最近一天不是今天或昨天，連續記錄中斷
+        }
+        
+        // 計算連續天數
+        for (let i = 0; i < sortedDates.length - 1; i++) {
+          const currentDate = new Date(sortedDates[i]);
+          const nextDate = new Date(sortedDates[i + 1]);
+          
+          const diffTime = currentDate - nextDate;
+          const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+          
+          if (diffDays === 1) {
+            streak++;
+          } else {
+            break;
+          }
+        }
+        
+        return streak;
+      },
+      
+      // 計算最長連續天數
+      getLongestStreak: function() {
+        if (this.records.length === 0) return 0;
+        
+        const sortedDates = [...new Set(
+          this.records.map(record => 
+            new Date(record.date).toLocaleDateString('zh-Hant')
+          )
+        )].sort((a, b) => new Date(a) - new Date(b));
+        
+        let currentStreak = 1;
+        let maxStreak = 1;
+        
+        for (let i = 0; i < sortedDates.length - 1; i++) {
+          const currentDate = new Date(sortedDates[i]);
+          const nextDate = new Date(sortedDates[i + 1]);
+          
+          const diffTime = nextDate - currentDate;
+          const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+          
+          if (diffDays === 1) {
+            currentStreak++;
+            maxStreak = Math.max(maxStreak, currentStreak);
+          } else {
+            currentStreak = 1;
+          }
+        }
+        
+        return maxStreak;
+      },
+      
+      // 更新統計數據
+      updateStats: function() {
+        const currentMonthRecords = this.getCurrentMonthRecords();
+        const currentStreak = this.getCurrentStreak();
+        const longestStreak = this.getLongestStreak();
+        const totalRecords = this.records.length;
+        
+        // 更新首頁統計
+        document.querySelectorAll('.status-grid .status-item .status-value')[0].textContent = 
+          currentMonthRecords.length;
+        document.querySelectorAll('.status-grid .status-item .status-value')[1].textContent = 
+          currentStreak;
+        document.querySelectorAll('.status-grid .status-item .status-value')[2].textContent = 
+          totalRecords;
+        document.querySelectorAll('.status-grid .status-item .status-value')[3].textContent = 
+          longestStreak;
+          
+        // 更新統計頁面數據
+        const statsPageItems = document.querySelectorAll('#statsPage .status-grid .status-item .status-value');
+        statsPageItems[0].textContent = currentMonthRecords.length;
+        
+        // 計算出席率 (本月打卡天數/當前日期)
+        const now = new Date();
+        const daysInMonth = new Date(now.getFullYear(), now.getMonth() + 1, 0).getDate();
+        const daysPassed = Math.min(now.getDate(), daysInMonth);
+        const attendanceRate = Math.round((currentMonthRecords.length / daysPassed) * 100);
+        statsPageItems[1].textContent = attendanceRate + '%';
+        
+        statsPageItems[2].textContent = currentStreak;
+        statsPageItems[3].textContent = longestStreak;
+        
+        // 計算時段分佈
+        const timeDistribution = {morning: 0, afternoon: 0, evening: 0};
+        this.records.forEach(record => {
+          const hour = new Date(record.date).getHours();
+          if (hour < 12) timeDistribution.morning++;
+          else if (hour < 18) timeDistribution.afternoon++;
+          else timeDistribution.evening++;
+        });
+        
+        const total = this.records.length || 1; // 避免除以零
+        const morningPercent = Math.round((timeDistribution.morning / total) * 100);
+        const afternoonPercent = Math.round((timeDistribution.afternoon / total) * 100);
+        const eveningPercent = Math.round((timeDistribution.evening / total) * 100);
+        
+        const timeDistElements = document.querySelectorAll('#statsPage .card:last-child .status-value');
+        if (timeDistElements.length >= 3) {
+          timeDistElements[0].textContent = morningPercent + '%';
+          timeDistElements[1].textContent = afternoonPercent + '%';
+          timeDistElements[2].textContent = eveningPercent + '%';
+        }
+      },
+      
+      // 更新日曆頁面
+      updateCalendar: function() {
+        const now = new Date();
+        const currentYear = now.getFullYear();
+        const currentMonth = now.getMonth();
+        
+        // 設置日曆標題
+        const calendarTitle = document.querySelector('.calendar-page .card:first-child div:first-child');
+        calendarTitle.textContent = `${currentYear}年${currentMonth + 1}月`;
+        
+        // 獲取當月第一天是星期幾
+        const firstDay = new Date(currentYear, currentMonth, 1).getDay() || 7; // 將星期日(0)轉為7
+        
+        // 獲取當月天數
+        const daysInMonth = new Date(currentYear, currentMonth + 1, 0).getDate();
+        
+        // 清除原有日期
+        const dayItems = document.querySelectorAll('.calendar-grid .day-item');
+        for (let i = 7; i < dayItems.length; i++) {
+          dayItems[i].textContent = '';
+          dayItems[i].classList.remove('checked', 'today');
+        }
+        
+        // 設置日期和標記
+        for (let i = 1; i <= daysInMonth; i++) {
+          const dayIndex = i + firstDay + 6; // 7個表頭 + 偏移
+          if (dayIndex < dayItems.length) {
+            dayItems[dayIndex].textContent = i;
+            
+            // 檢查是否為今天
+            if (i === now.getDate()) {
+              dayItems[dayIndex].classList.add('today');
+            }
+            
+            // 檢查是否有記錄
+            const dateToCheck = new Date(currentYear, currentMonth, i);
+            const hasRecord = this.records.some(record => {
+              const recordDate = new Date(record.date);
+              return recordDate.getDate() === i && 
+                     recordDate.getMonth() === currentMonth && 
+                     recordDate.getFullYear() === currentYear;
+            });
+            
+            if (hasRecord) {
+              dayItems[dayIndex].classList.add('checked');
+            }
+            
+            // 添加點擊事件
+            dayItems[dayIndex].onclick = () => {
+              this.showDayDetails(new Date(currentYear, currentMonth, i));
+            };
+          }
+        }
+      },
+      
+      // 顯示某天詳情
+      showDayDetails: function(date) {
+        const records = this.getRecordsByDate(date);
+        const dateStr = date.toLocaleDateString('zh-Hant', {
+          month: 'long',
+          day: 'numeric'
+        });
+        
+        if (records.length === 0) {
+          alert(`${dateStr}沒有學習記錄`);
+          return;
+        }
+        
+        // 格式化記錄顯示
+        let message = `${dateStr}學習記錄：\n\n`;
+        records.forEach((record, index) => {
+          const time = new Date(record.date).toLocaleTimeString('zh-Hant', {
+            hour: '2-digit',
+            minute: '2-digit'
+          });
+          message += `${index + 1}. 時間：${time}\n   位置：${record.location}\n   備註：${record.note || '無'}\n\n`;
+        });
+        
+        alert(message);
+      },
+      
+      // 渲染最近記錄
+      renderRecentRecords: function() {
+        const recentRecords = this.getRecentRecords();
+        const logContainer = document.querySelector('.study-log');
+        logContainer.innerHTML = '';
+        
+        const currentStreak = this.getCurrentStreak();
+        
+        recentRecords.forEach((record, index) => {
+          const recordDate = new Date(record.date);
+          const isToday = recordDate.toLocaleDateString() === new Date().toLocaleDateString();
+          
+          const dateString = recordDate.toLocaleDateString('zh-Hant', {
+            month: 'numeric',
+            day: 'numeric'
+          });
+          
+          const timeString = recordDate.toLocaleTimeString('zh-Hant', {
+            hour: '2-digit',
+            minute: '2-digit'
+          });
+          
+          const item = document.createElement('div');
+          item.className = 'study-item';
+          
+          item.innerHTML = `
+            <div class="study-date">${dateString}${isToday ? '（今天）' : ''}
+              ${index === 0 && currentStreak > 0 ? `<span class="streak-badge">連續${currentStreak}天</span>` : ''}
+            </div>
+            <div class="study-time">到館時間：${timeString}</div>
+            <div class="study-note">備註：${record.note || '無'}</div>
+          `;
+          
+          logContainer.appendChild(item);
+        });
+        
+        // 如果沒有記錄，顯示提示
+        if (recentRecords.length === 0) {
+          logContainer.innerHTML = '<div style="text-align: center; color: #666;">暫無學習記錄</div>';
+        }
+      },
+      
+      // 渲染圖表
+      renderCharts: function() {
+        this.renderTrendChart();
+      },
+      
+      // 渲染趨勢圖表
+      renderTrendChart: function() {
+        const chartContainer = document.querySelector('#statsPage .chart');
+        chartContainer.innerHTML = '<canvas id="trendChart"></canvas>';
+        
+        // 獲取過去30天的數據
+        const data = this.getLast30DaysData();
+        
+        // 創建圖表
+        const ctx = document.getElementById('trendChart').getContext('2d');
+        new Chart(ctx, {
+          type: 'line',
+          data: {
+            labels: data.labels,
+            datasets: [{
+              label: '學習記錄',
+              data: data.values,
+              fill: false,
+              borderColor: '#4562A8',
+              tension: 0.1,
+              pointBackgroundColor: '#4562A8'
+            }]
+          },
+          options: {
+            responsive: true,
+            plugins: {
+              legend: {
+                display: false
+              },
+              tooltip: {
+                callbacks: {
+                  title: function(context) {
+                    return data.tooltips[context[0].dataIndex];
+                  }
+                }
+              }
+            },
+            scales: {
+              y: {
+                beginAtZero: true,
+                ticks: {
+                  precision: 0
+                }
+              }
+            }
+          }
+        });
+      },
+      
+      // 獲取過去30天的數據
+      getLast30DaysData: function() {
+        const result = {
+          labels: [],
+          values: [],
+          tooltips: []
+        };
+        
+        // 生成過去30天的日期
+        const now = new Date();
+        for (let i = 29; i >= 0; i--) {
+          const date = new Date(now);
+          date.setDate(date.getDate() - i);
+          
+          // 短標籤 (如 "3/15")
+          result.labels.push(`${date.getMonth() + 1}/${date.getDate()}`);
+          
+          // 完整標籤 (用於工具提示)
+          result.tooltips.push(date.toLocaleDateString('zh-Hant', {
+            month: 'long',
+            day: 'numeric'
+          }));
+          
+          // 記錄數量
+          const recordsForDay = this.getRecordsByDate(date).length;
+          result.values.push(recordsForDay > 0 ? 1 : 0); // 二元數據：有無打卡
+        }
+        
+        return result;
+      }
+    };
+
+    // 初始化Bootstrap模態框
+    const locationModal = new bootstrap.Modal(document.getElementById('locationModal'));
+    
+    // 通知系統
+    function showNotification(message, type = 'info') {
+      // 創建通知元素
+      const notification = document.createElement('div');
+      notification.className = `notification ${type}`;
+      notification.innerHTML = `
+        <div class="notification-content">
+          ${message}
+        </div>
+      `;
+      
+      // 添加到頁面
+      document.body.appendChild(notification);
+      
+      // 動畫顯示
+      setTimeout(() => {
+        notification.classList.add('show');
+      }, 10);
+      
+      // 自動消失
+      setTimeout(() => {
+        notification.classList.remove('show');
+        setTimeout(() => {
+          notification.remove();
+        }, 300);
+      }, 3000);
+    }
+    
+    // 請求通知權限
+    function requestNotificationPermission() {
+      if ('Notification' in window) {
+        Notification.requestPermission();
+      }
+    }
+    
+    // 發送系統通知
+    function sendSystemNotification(title, body) {
+      if ('Notification' in window && Notification.permission === 'granted') {
+        new Notification(title, {
+          body: body,
+          icon: 'https://cdn-icons-png.flaticon.com/512/2232/2232688.png'
+        });
+      }
+    }
+    
+    // 設置學習提醒
+    function setStudyReminder() {
+      // 獲取上次學習記錄時間
+      const lastRecord = studyRecordManager.records
+        .sort((a, b) => new Date(b.date) - new Date(a.date))[0];
+      
+      if (!lastRecord) return;
+      
+      const lastDate = new Date(lastRecord.date);
+      const now = new Date();
+      
+      // 如果當天沒有記錄且是上午9點後，發送提醒
+      if (lastDate.toLocaleDateString() !== now.toLocaleDateString() && 
+          now.getHours() >= 9) {
+        sendSystemNotification(
+          '學習提醒',
+          '今天還沒有記錄學習，要保持連續打卡記錄喔！'
+        );
+      }
+    }
+    
+    // 日期和時間更新
+    function updateDateTime() {
+      const now = new Date();
+      const timeString = now.toLocaleTimeString('zh-Hant', { hour12: false });
+      const dateString = now.toLocaleDateString('zh-Hant', {
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric',
+        weekday: 'long'
+      });
+      
+      document.getElementById('currentTime').textContent = timeString;
+      document.getElementById('currentDate').textContent = dateString;
+    }
+
+    function formatDateTimeLocal(date) {
+      // 將日期格式化為 datetime-local 輸入框所需格式
+      const year = date.getFullYear();
+      const month = (date.getMonth() + 1).toString().padStart(2, '0');
+      const day = date.getDate().toString().padStart(2, '0');
+      const hours = date.getHours().toString().padStart(2, '0');
+      const minutes = date.getMinutes().toString().padStart(2, '0');
+      
+      return `${year}-${month}-${day}T${hours}:${minutes}`;
+    }
+
+    // 設置當前時間為預設輸入時間
+    const now = new Date();
+    document.getElementById('studyTimeInput').value = formatDateTimeLocal(now);
+
+    setInterval(updateDateTime, 1000);
+    updateDateTime();
+
+    // 打卡按鈕點擊事件
+    const clockButton = document.getElementById('clockButton');
+    let isCheckedIn = false; // 尚未記錄
+    
+    clockButton.addEventListener('click', function() {
+      const selectedLocation = document.getElementById('selectedLocation').textContent;
+      const studyTime = document.getElementById('studyTimeInput').value;
+      const studyNote = document.getElementById('studyNote').value;
+      
+      if (!studyTime) {
+        showNotification('請選擇學習時間', 'warning');
+        return;
+      }
+      
+      // 添加記錄
+      studyRecordManager.addRecord({
+        location: selectedLocation,
+        date: new Date(studyTime),
+        note: studyNote
+      });
+      
+      this.innerHTML = '<i class="fas fa-check-circle me-2"></i>已記錄學習';
+      this.style.background = '#8E8E93';
+      isCheckedIn = true;
+      
+      // 顯示確認訊息
+      showNotification('學習記錄成功！', 'success');
+      
+      // 重置按鈕（5秒後）
+      setTimeout(() => {
+        this.innerHTML = '<i class="fas fa-book-reader me-2"></i>記錄學習';
+        this.style.background = 'var(--success-color)';
+        isCheckedIn = false;
+      }, 5000);
+      
+      // 清空備註
+      document.getElementById('studyNote').value = '';
+    });
+
+    // 使用當前時間按鈕
+    document.getElementById('useCurrentTimeBtn').addEventListener('click', function() {
+      document.getElementById('studyTimeInput').value = formatDateTimeLocal(new Date());
+    });
+
+    // 標籤欄頁面切換
+    const tabItems = document.querySelectorAll('.tab-item');
+    const pages = document.querySelectorAll('.page');
+    const pageTitle = document.getElementById('pageTitle');
+    
+    // 頁面標題對應
+    const pageTitles = {
+      'homePage': '圖書館打卡',
+      'calendarPage': '到館日曆',
+      'statsPage': '學習統計'
+    };
+    
+    tabItems.forEach(item => {
+      item.addEventListener('click', function() {
+        // 移除所有活動狀態
+        tabItems.forEach(tab => tab.classList.remove('active'));
+        pages.forEach(page => page.classList.remove('active'));
+        
+        // 設置活動頁面
+        const pageId = this.getAttribute('data-page');
+        document.getElementById(pageId).classList.add('active');
+        this.classList.add('active');
+        
+        // 更新頁面標題
+        pageTitle.textContent = pageTitles[pageId];
+        
+        // 如果切換到統計頁面，重新渲染圖表
+        if (pageId === 'statsPage') {
+          studyRecordManager.renderCharts();
+        }
+      });
+    });
+    
+    // 位置選擇相關功能
+    document.getElementById('changeLocationBtn').addEventListener('click', function() {
+      locationModal.show();
+    });
+    
+    // 點擊預設位置選項
+    document.querySelectorAll('.location-option').forEach(option => {
+      option.addEventListener('click', function() {
+        const location = this.getAttribute('data-location');
+        document.getElementById('selectedLocation').textContent = location;
+        locationModal.hide();
+      });
+    });
+    
+    // 添加自定義位置
+    document.getElementById('addCustomLocation').addEventListener('click', function() {
+      const customLocation = document.getElementById('customLocation').value.trim();
+      if (customLocation) {
+        document.getElementById('selectedLocation').textContent = customLocation;
+        document.getElementById('customLocation').value = '';
+        locationModal.hide();
+      } else {
+        showNotification('請輸入位置名稱', 'warning');
+      }
+    });
+    
+    // 添加通知樣式
+    const notificationStyle = document.createElement('style');
+    notificationStyle.textContent = `
+      .notification {
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        max-width: 300px;
+        padding: 15px 20px;
+        border-radius: 12px;
+        background: rgba(0,0,0,0.8);
+        color: white;
+        font-size: 14px;
+        z-index: 9999;
+        transform: translateY(-20px);
+        opacity: 0;
+        transition: all 0.3s ease;
+      }
+      
+      .notification.show {
+        transform: translateY(0);
+        opacity: 1;
+      }
+      
+      .notification.success {
+        background: rgba(52, 199, 89, 0.9);
+      }
+      
+      .notification.warning {
+        background: rgba(255, 149, 0, 0.9);
+      }
+      
+      .notification.error {
+        background: rgba(255, 59, 48, 0.9);
+      }
+    `;
+    document.head.appendChild(notificationStyle);
+    
+    // 初始化
+    document.addEventListener('DOMContentLoaded', function() {
+      // 初始化數據
+      studyRecordManager.init();
+      
+      // 請求通知權限
+      requestNotificationPermission();
+      
+      // 設置定期檢查學習提醒（每小時檢查一次）
+      setInterval(setStudyReminder, 3600 * 1000);
+      
+      // 初始顯示通知
+      setTimeout(() => {
+        showNotification('歡迎使用圖書館打卡系統！');
+      }, 1000);
+    });
+  </script>
+</body>
+</html>

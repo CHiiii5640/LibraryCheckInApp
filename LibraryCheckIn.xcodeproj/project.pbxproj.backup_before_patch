@@ -24,14 +24,35 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
-		E48B9B902DB7FCAC007B2C47 /* LibraryCheckInApp.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = LibraryCheckInApp.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		E48B9B902DB7FCAC007B2C47 /* 補藥再卷ㄌ.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "補藥再卷ㄌ.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		E48B9B9D2DB7FCAF007B2C47 /* LibraryCheckInAppTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = LibraryCheckInAppTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		E48B9BA72DB7FCAF007B2C47 /* LibraryCheckInAppUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = LibraryCheckInAppUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
+/* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
+		E4AF443C2DB8202D005C0B50 /* Exceptions for "LibraryCheckInApp" folder in "LibraryCheckInAppTests" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				Views/HomeView.swift,
+			);
+			target = E48B9B9C2DB7FCAF007B2C47 /* LibraryCheckInAppTests */;
+		};
+		E4AF443D2DB8207E005C0B50 /* Exceptions for "LibraryCheckInApp" folder in "補藥再卷ㄌ" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				Views/HomeView.swift,
+			);
+			target = E48B9B8F2DB7FCAC007B2C47 /* 補藥再卷ㄌ */;
+		};
+/* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
+
 /* Begin PBXFileSystemSynchronizedRootGroup section */
-		E48B9B922DB7FCAC007B2C47 /* LibraryCheckInApp */ = {
+		E452BB8C2DB804FC00B31C5A /* LibraryCheckInApp */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+				E4AF443D2DB8207E005C0B50 /* Exceptions for "LibraryCheckInApp" folder in "補藥再卷ㄌ" target */,
+				E4AF443C2DB8202D005C0B50 /* Exceptions for "LibraryCheckInApp" folder in "LibraryCheckInAppTests" target */,
+			);
 			path = LibraryCheckInApp;
 			sourceTree = "<group>";
 		};
@@ -75,7 +96,7 @@
 		E48B9B872DB7FCAC007B2C47 = {
 			isa = PBXGroup;
 			children = (
-				E48B9B922DB7FCAC007B2C47 /* LibraryCheckInApp */,
+				E452BB8C2DB804FC00B31C5A /* LibraryCheckInApp */,
 				E48B9BA02DB7FCAF007B2C47 /* LibraryCheckInAppTests */,
 				E48B9BAA2DB7FCAF007B2C47 /* LibraryCheckInAppUITests */,
 				E48B9B912DB7FCAC007B2C47 /* Products */,
@@ -85,7 +106,7 @@
 		E48B9B912DB7FCAC007B2C47 /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				E48B9B902DB7FCAC007B2C47 /* LibraryCheckInApp.app */,
+				E48B9B902DB7FCAC007B2C47 /* 補藥再卷ㄌ.app */,
 				E48B9B9D2DB7FCAF007B2C47 /* LibraryCheckInAppTests.xctest */,
 				E48B9BA72DB7FCAF007B2C47 /* LibraryCheckInAppUITests.xctest */,
 			);
@@ -95,9 +116,9 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
-		E48B9B8F2DB7FCAC007B2C47 /* LibraryCheckInApp */ = {
+		E48B9B8F2DB7FCAC007B2C47 /* 補藥再卷ㄌ */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = E48B9BB12DB7FCAF007B2C47 /* Build configuration list for PBXNativeTarget "LibraryCheckInApp" */;
+			buildConfigurationList = E48B9BB12DB7FCAF007B2C47 /* Build configuration list for PBXNativeTarget "補藥再卷ㄌ" */;
 			buildPhases = (
 				E48B9B8C2DB7FCAC007B2C47 /* Sources */,
 				E48B9B8D2DB7FCAC007B2C47 /* Frameworks */,
@@ -108,13 +129,13 @@
 			dependencies = (
 			);
 			fileSystemSynchronizedGroups = (
-				E48B9B922DB7FCAC007B2C47 /* LibraryCheckInApp */,
+				E452BB8C2DB804FC00B31C5A /* LibraryCheckInApp */,
 			);
-			name = LibraryCheckInApp;
+			name = "補藥再卷ㄌ";
 			packageProductDependencies = (
 			);
 			productName = LibraryCheckInApp;
-			productReference = E48B9B902DB7FCAC007B2C47 /* LibraryCheckInApp.app */;
+			productReference = E48B9B902DB7FCAC007B2C47 /* 補藥再卷ㄌ.app */;
 			productType = "com.apple.product-type.application";
 		};
 		E48B9B9C2DB7FCAF007B2C47 /* LibraryCheckInAppTests */ = {
@@ -131,6 +152,7 @@
 				E48B9B9F2DB7FCAF007B2C47 /* PBXTargetDependency */,
 			);
 			fileSystemSynchronizedGroups = (
+				E452BB8C2DB804FC00B31C5A /* LibraryCheckInApp */,
 				E48B9BA02DB7FCAF007B2C47 /* LibraryCheckInAppTests */,
 			);
 			name = LibraryCheckInAppTests;
@@ -200,7 +222,7 @@
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
-				E48B9B8F2DB7FCAC007B2C47 /* LibraryCheckInApp */,
+				E48B9B8F2DB7FCAC007B2C47 /* 補藥再卷ㄌ */,
 				E48B9B9C2DB7FCAF007B2C47 /* LibraryCheckInAppTests */,
 				E48B9BA62DB7FCAF007B2C47 /* LibraryCheckInAppUITests */,
 			);
@@ -258,12 +280,12 @@
 /* Begin PBXTargetDependency section */
 		E48B9B9F2DB7FCAF007B2C47 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
-			target = E48B9B8F2DB7FCAC007B2C47 /* LibraryCheckInApp */;
+			target = E48B9B8F2DB7FCAC007B2C47 /* 補藥再卷ㄌ */;
 			targetProxy = E48B9B9E2DB7FCAF007B2C47 /* PBXContainerItemProxy */;
 		};
 		E48B9BA92DB7FCAF007B2C47 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
-			target = E48B9B8F2DB7FCAC007B2C47 /* LibraryCheckInApp */;
+			target = E48B9B8F2DB7FCAC007B2C47 /* 補藥再卷ㄌ */;
 			targetProxy = E48B9BA82DB7FCAF007B2C47 /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
@@ -405,6 +427,7 @@
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				IPHONEOS_DEPLOYMENT_TARGET = 18.4;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -433,6 +456,7 @@
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				IPHONEOS_DEPLOYMENT_TARGET = 18.4;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -530,7 +554,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		E48B9BB12DB7FCAF007B2C47 /* Build configuration list for PBXNativeTarget "LibraryCheckInApp" */ = {
+		E48B9BB12DB7FCAF007B2C47 /* Build configuration list for PBXNativeTarget "補藥再卷ㄌ" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				E48B9BB22DB7FCAF007B2C47 /* Debug */,

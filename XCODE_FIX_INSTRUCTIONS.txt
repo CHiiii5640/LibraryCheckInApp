@@ -1,0 +1,48 @@
+# 解決 Xcode "Multiple commands produce" 錯誤的步驟
+
+## 問題原因
+項目中存在重複引用的文件，特別是：
+1. LocationPickerView.swift
+2. StatItemView.swift
+3. Info.plist 和其他資源文件
+
+## 修復步驟
+
+### 1. 打開 Xcode 項目
+
+### 2. 檢查構建目標設置
+   1. 選擇項目導航器中的藍色項目圖標
+   2. 選擇目標 "補藥再卷ㄌ"
+   3. 選擇 "Build Phases" 標籤
+
+### 3. 修復 "Compile Sources" 部分
+   1. 展開 "Compile Sources" 部分
+   2. 仔細檢查並移除重複的 LocationPickerView.swift 條目
+      - 僅保留 Views/Components/LocationPickerView.swift
+   3. 仔細檢查並移除重複的 StatItemView.swift 條目
+      - 僅保留 Views/Components/StatItemView.swift
+
+### 4. 修復 "Copy Bundle Resources" 部分
+   1. 展開 "Copy Bundle Resources" 部分
+   2. 仔細檢查並移除重複的 LaunchScreen.storyboard 條目
+      - 僅保留 Resources/LaunchScreen.storyboard
+   3. 確保 Info.plist 不在此部分列出(它應該在項目設置中單獨指定)
+
+### 5. 檢查 Info.plist 設置
+   1. 選擇 "Build Settings" 標籤
+   2. 在搜索框中輸入 "Info.plist"
+   3. 確保 "Info.plist File" 設置指向正確且唯一的 Info.plist 文件
+
+### 6. 如果上述方法無效，創建新目標
+   1. 選擇 File > New > Target
+   2. 選擇與原目標相同的模板（例如 App）
+   3. 給它一個新名稱（例如 "LibraryCheckInAppNew"）
+   4. 將所有必要的源文件和資源添加到新目標
+   5. 配置新目標的設置
+
+### 7. 清理項目
+   1. 選擇 Xcode 菜單中的 Product > Clean Build Folder
+   2. 關閉並重新打開 Xcode 項目
+
+### 8. 重新構建項目
+   選擇 Product > Build 或使用快捷鍵 Cmd+B 
