@@ -3,6 +3,7 @@ import SwiftUI
 @main
 struct LibraryCheckInAppApp: App {
     @StateObject private var transitionManager = TransitionManager()
+    @StateObject private var recordManager = StudyRecordManager()
     @State private var isShowingSplash = true
     
     var body: some Scene {
@@ -15,6 +16,7 @@ struct LibraryCheckInAppApp: App {
                 } else {
                     MainTabView()
                         .environmentObject(transitionManager)
+                        .environmentObject(recordManager)
                         .transition(transitionManager.getTransition())
                         .zIndex(0)
                 }
@@ -22,7 +24,7 @@ struct LibraryCheckInAppApp: App {
             .animation(.easeInOut(duration: 0.5), value: isShowingSplash)
             .onAppear {
                 // 2秒後隱藏啟動畫面
-                DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
                     withAnimation {
                         isShowingSplash = false
                     }
@@ -38,7 +40,7 @@ struct SplashScreenView: View {
     
     var body: some View {
         ZStack {
-            Color("BackgroundColor")
+            Color.white
                 .ignoresSafeArea()
             
             VStack(spacing: 20) {
