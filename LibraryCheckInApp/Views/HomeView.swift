@@ -2,6 +2,44 @@ import SwiftUI
 import UIKit
 import AudioToolbox
 
+/// 震動回饋類型
+enum Vibration {
+    case error, success, warning
+    // 輕重程度回饋
+    case light, medium, heavy, soft, rigid
+    // 選擇器切換震動
+    case selection
+    case oldSchool
+
+    public func vibrate() {
+        // Debug: 印出目前觸發的震動類型
+        print("Triggering vibration: \(self)")
+        switch self {
+        case .error:
+            UINotificationFeedbackGenerator().notificationOccurred(.error)
+        case .success:
+            UINotificationFeedbackGenerator().notificationOccurred(.success)
+        case .warning:
+            UINotificationFeedbackGenerator().notificationOccurred(.warning)
+        case .light:
+            UIImpactFeedbackGenerator(style: .light).impactOccurred()
+        case .medium:
+            UIImpactFeedbackGenerator(style: .medium).impactOccurred()
+        case .heavy:
+            UIImpactFeedbackGenerator(style: .heavy).impactOccurred()
+        case .soft:
+            guard #available(iOS 13.0, *) else { return }
+            UIImpactFeedbackGenerator(style: .soft).impactOccurred()
+        case .rigid:
+            guard #available(iOS 13.0, *) else { return }
+            UIImpactFeedbackGenerator(style: .rigid).impactOccurred()
+        case .selection:
+            UISelectionFeedbackGenerator().selectionChanged()
+        case .oldSchool:
+            AudioServicesPlaySystemSound(SystemSoundID(kSystemSoundID_Vibrate))
+        }
+    }
+}
 struct HomeView: View {
     @EnvironmentObject var recordManager: StudyRecordManager
     @EnvironmentObject var transitionManager: TransitionManager
@@ -107,7 +145,8 @@ struct HomeView: View {
                                 notificationMessage = "學習記錄成功！"
                                 showingNotification = true
                                 studyNote = ""
-                                
+                                Vibration.success.vibrate()
+
                                 // 5秒後重置按鈕
                                 DispatchQueue.main.asyncAfter(deadline: .now() + 5) {
                                     withAnimation {
@@ -119,8 +158,6 @@ struct HomeView: View {
                             HStack {
                                 Image(systemName: "book.closed.fill")
                                 Text(isRecordSaved ? "已記錄學習" : "記錄學習")
-                                //Vibration.success.vibrate()
-
                             }
                             .font(.system(size: 17, weight: .semibold))
                             .foregroundColor(.white)
@@ -213,4 +250,4 @@ struct HomeView: View {
             }
         }
     }
-} 
+}
