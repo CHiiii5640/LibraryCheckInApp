@@ -1,4 +1,5 @@
 import SwiftUI
+// Removed unnecessary module import
 
 struct StudyRecordItemView: View {
     var record: StudyRecord
@@ -80,4 +81,4 @@ struct StudyRecordItemView: View {
                 )
         )
     }
-} 
+}

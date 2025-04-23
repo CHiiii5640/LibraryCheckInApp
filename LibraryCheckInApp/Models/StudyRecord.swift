@@ -6,11 +6,11 @@ struct StudyRecord: Identifiable, Codable {
     var date: Date
     var note: String
     var timestamp: Date
-    
-    init(location: String, date: Date, note: String) {
+
+    init(location: String, date: Date, note: String?) {
         self.location = location
         self.date = date
-        self.note = note
+        self.note = note ?? ""
         self.timestamp = Date()
     }
-} 
+}

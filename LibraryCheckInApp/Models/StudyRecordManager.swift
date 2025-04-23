@@ -10,6 +10,29 @@ class StudyRecordManager: ObservableObject {
         loadRecords()
     }
     
+    // 添加記錄 (參數版本)
+    func addRecord(location: String, date: Date, note: String) {
+        let newRecord = StudyRecord(location: location, date: date, note: note)
+        records.append(newRecord)
+        saveRecords()
+    }
+    
+    // 添加記錄 (物件版本)
+    func addRecord(_ record: StudyRecord) {
+        records.append(record)
+        saveRecords()
+    }
+    
+    //判斷是否可以打卡（允許一天多次，但不能早於當天已有記錄的最晚時間）
+    func canCheckIn(at date: Date) -> Bool {
+        let sameDayRecords = getRecordsForDate(date)
+        
+        guard let latest = sameDayRecords.map({ $0.date }).max() else {
+            return true // 沒有記錄，允許打卡
+        }
+        
+        return date > latest
+    }
     // 加載記錄
     func loadRecords() {
         if let data = UserDefaults.standard.data(forKey: recordsKey) {
@@ -18,7 +41,7 @@ class StudyRecordManager: ObservableObject {
             }
         }
     }
-    
+
     // 保存記錄
     func saveRecords() {
         if let encoded = try? JSONEncoder().encode(records) {
@@ -26,12 +49,7 @@ class StudyRecordManager: ObservableObject {
         }
     }
     
-    // 添加記錄
-    func addRecord(location: String, date: Date, note: String) {
-        let newRecord = StudyRecord(location: location, date: date, note: note)
-        records.append(newRecord)
-        saveRecords()
-    }
+
     
     // 獲取本月記錄
     func getCurrentMonthRecords() -> [StudyRecord] {
@@ -52,6 +70,7 @@ class StudyRecordManager: ObservableObject {
             calendar.isDate(record.date, inSameDayAs: date)
         }
     }
+
     
     // 獲取最近記錄
     func getRecentRecords(limit: Int = 5) -> [StudyRecord] {
@@ -72,8 +91,8 @@ class StudyRecordManager: ObservableObject {
         // 獲取不重複日期
         var uniqueDates: [DateComponents] = []
         for date in sortedDates {
-            if !uniqueDates.contains(where: { 
-                $0.year == date.year && $0.month == date.month && $0.day == date.day 
+            if !uniqueDates.contains(where: {
+                $0.year == date.year && $0.month == date.month && $0.day == date.day
             }) {
                 uniqueDates.append(date)
             }
@@ -84,16 +103,16 @@ class StudyRecordManager: ObservableObject {
         // 檢查最近一天是否是今天或昨天
         let todayComp = calendar.dateComponents([.year, .month, .day], from: Date())
         let yesterdayComp = calendar.dateComponents(
-            [.year, .month, .day], 
+            [.year, .month, .day],
             from: calendar.date(byAdding: .day, value: -1, to: Date())!
         )
         
-        let isRecentToday = uniqueDates[0].year == todayComp.year && 
-                          uniqueDates[0].month == todayComp.month && 
+        let isRecentToday = uniqueDates[0].year == todayComp.year &&
+                          uniqueDates[0].month == todayComp.month &&
                           uniqueDates[0].day == todayComp.day
         
-        let isRecentYesterday = uniqueDates[0].year == yesterdayComp.year && 
-                              uniqueDates[0].month == yesterdayComp.month && 
+        let isRecentYesterday = uniqueDates[0].year == yesterdayComp.year &&
+                              uniqueDates[0].month == yesterdayComp.month &&
                               uniqueDates[0].day == yesterdayComp.day
                               
         if !isRecentToday && !isRecentYesterday {
@@ -132,8 +151,8 @@ class StudyRecordManager: ObservableObject {
         // 獲取不重複日期
         var uniqueDates: [DateComponents] = []
         for date in sortedDates {
-            if !uniqueDates.contains(where: { 
-                $0.year == date.year && $0.month == date.month && $0.day == date.day 
+            if !uniqueDates.contains(where: {
+                $0.year == date.year && $0.month == date.month && $0.day == date.day
             }) {
                 uniqueDates.append(date)
             }
@@ -165,7 +184,7 @@ class StudyRecordManager: ObservableObject {
     // 計算時段分佈
     func getTimeDistribution() -> (morning: Int, afternoon: Int, evening: Int) {
         let morning = records.filter { Calendar.current.component(.hour, from: $0.date) < 12 }.count
-        let afternoon = records.filter { 
+        let afternoon = records.filter {
             let hour = Calendar.current.component(.hour, from: $0.date)
             return hour >= 12 && hour < 18
         }.count
@@ -200,7 +219,7 @@ class StudyRecordManager: ObservableObject {
         
         // 本月打卡天數
         let daysWithRecords = Set(
-            getCurrentMonthRecords().map { 
+            getCurrentMonthRecords().map {
                 calendar.dateComponents([.year, .month, .day], from: $0.date)
             }
         ).count
@@ -208,4 +227,4 @@ class StudyRecordManager: ObservableObject {
         if daysPassed == 0 { return 0 }
         return Int((Double(daysWithRecords) / Double(daysPassed)) * 100)
     }
-} 
+}
