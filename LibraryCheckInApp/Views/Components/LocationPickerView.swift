@@ -1,9 +1,11 @@
+import CoreLocation
 import SwiftUI
 
 struct LocationPickerView: View {
     @Binding var selectedLocation: String
     @State private var showingLocationPicker = false
     @State private var customLocation = ""
+    @StateObject private var locationManager = LocationManager()
     
     let locations = [
         "校區中央圖書館",
@@ -62,6 +64,33 @@ struct LocationPickerView: View {
         .sheet(isPresented: $showingLocationPicker) {
             NavigationView {
                 List {
+                    Section(header: Text("使用目前位置")) {
+                        Button(action: {
+                            if let location = locationManager.currentLocation {
+                                let geocoder = CLGeocoder()
+                                geocoder.reverseGeocodeLocation(location) { placemarks, error in
+                                    if let placemark = placemarks?.first {
+                                        let address = [
+                                            placemark.country,
+                                            placemark.administrativeArea,
+                                            placemark.locality,
+                                            placemark.name
+                                        ].compactMap { $0 }.joined(separator: " ")
+                                        selectedLocation = "目前位置：\(address)"
+                                    } else {
+                                        let lat = String(format: "%.4f", location.coordinate.latitude)
+                                        let lon = String(format: "%.4f", location.coordinate.longitude)
+                                        selectedLocation = "目前位置：(\(lat), \(lon))"
+                                    }
+                                    showingLocationPicker = false
+                                }
+                            }
+                        }) {
+                            Label("使用目前位置", systemImage: "location.fill")
+                                .foregroundColor(.blue)
+                        }
+                    }
+
                     ForEach(0..<locations.count, id: \.self) { index in
                         Button(action: {
                             selectedLocation = locations[index]
@@ -80,11 +109,11 @@ struct LocationPickerView: View {
                             }
                         }
                     }
-                    
+
                     Section(header: Text("自定義位置")) {
                         HStack {
                             TextField("輸入其他位置...", text: $customLocation)
-                            
+
                             Button(action: {
                                 if !customLocation.isEmpty {
                                     selectedLocation = customLocation
@@ -113,4 +142,4 @@ struct LocationPickerView: View {
             }
         }
     }
-} 
+}
