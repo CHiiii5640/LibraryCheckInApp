@@ -49,6 +49,10 @@ struct StudyRecordItemView: View {
                 .font(.system(size: 13))
                 .foregroundColor(.secondary)
             
+            Text("學習位置：\(record.location)")
+                .foregroundColor(.secondary)
+                .font(.system(size: 14))
+            
             if !record.note.isEmpty {
                 Text("備註：\(record.note)")
                     .font(.system(size: 13))

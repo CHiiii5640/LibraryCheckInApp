@@ -17,15 +17,15 @@ class LocationManager: NSObject, ObservableObject, CLLocationManagerDelegate {
         manager.startUpdatingLocation()
     }
 
-    func reverseGeocode(location: CLLocation, completion: @escaping (String?) -> Void) {
+    func reverseGeocode(location: CLLocation, completion: @escaping (String?, CLPlacemark?) -> Void) {
         geocoder.reverseGeocodeLocation(location) { placemarks, error in
             if let placemark = placemarks?.first {
                 let address = [placemark.administrativeArea, placemark.locality, placemark.name]
                     .compactMap { $0 }
                     .joined(separator: " ")
-                completion(address)
+                completion(address, placemark)
             } else {
-                completion(nil)
+                completion(nil, nil)
             }
         }
     }
@@ -34,7 +34,7 @@ class LocationManager: NSObject, ObservableObject, CLLocationManagerDelegate {
         if let location = locations.last {
             DispatchQueue.main.async {
                 self.currentLocation = location
-                self.reverseGeocode(location: location) { address in
+                self.reverseGeocode(location: location) { address, placemark in
                     DispatchQueue.main.async {
                         self.currentAddress = address
                         if let address = address {
