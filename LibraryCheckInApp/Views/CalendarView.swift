@@ -172,8 +172,11 @@ struct CalendarView: View {
             
             alertController.addAction(UIAlertAction(title: "確定", style: .default))
             
-            UIApplication.shared.windows.first?.rootViewController?.present(
-                alertController, animated: true)
+            if let scene = UIApplication.shared.connectedScenes.first as? UIWindowScene,
+               let window = scene.windows.first,
+               let rootVC = window.rootViewController {
+                rootVC.present(alertController, animated: true)
+            }
         } else {
             // 有記錄，顯示詳情
             let timeFormatter = DateFormatter()
@@ -194,8 +197,11 @@ struct CalendarView: View {
             
             alertController.addAction(UIAlertAction(title: "確定", style: .default))
             
-            UIApplication.shared.windows.first?.rootViewController?.present(
-                alertController, animated: true)
+            if let scene = UIApplication.shared.connectedScenes.first as? UIWindowScene,
+               let window = scene.windows.first,
+               let rootVC = window.rootViewController {
+                rootVC.present(alertController, animated: true)
+            }
         }
     }
-} 
+}

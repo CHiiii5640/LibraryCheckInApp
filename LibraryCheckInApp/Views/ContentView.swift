@@ -23,7 +23,7 @@ struct ContentView: View {
                         .tag(2)
                 }
                 .tabViewStyle(PageTabViewStyle(indexDisplayMode: .never))
-                .onChange(of: selectedTab) { newTab in
+                .onChange(of: selectedTab) { oldTab,newTab in
                     pageTitle = pageTitles[newTab]
                 }
                 

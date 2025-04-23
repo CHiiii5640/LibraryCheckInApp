@@ -1,4 +1,6 @@
 import SwiftUI
+import UIKit
+import AudioToolbox
 
 struct HomeView: View {
     @EnvironmentObject var recordManager: StudyRecordManager
@@ -117,6 +119,8 @@ struct HomeView: View {
                             HStack {
                                 Image(systemName: "book.closed.fill")
                                 Text(isRecordSaved ? "已記錄學習" : "記錄學習")
+                                //Vibration.success.vibrate()
+
                             }
                             .font(.system(size: 17, weight: .semibold))
                             .foregroundColor(.white)
