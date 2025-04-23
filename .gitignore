@@ -1,0 +1,22 @@
+# Xcode
+*.xcuserdatad/
+*.xcworkspace/
+xcuserdata/
+DerivedData/
+.idea/
+*.swiftsourceinfo
+
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# 輸出檔案
+*.ipa
+*.xcarchive
+*.dSYM.zip
+*.dSYM
+
+# Swift Package Manager
+.build/
+.swiftpm/
