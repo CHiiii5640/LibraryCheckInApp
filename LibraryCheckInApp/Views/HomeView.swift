@@ -279,9 +279,7 @@ struct HomeView: View {
             }
         }
     }
-    
-    // MARK: - 操作方法
-    
+        
     // 處理打卡操作
     private func handleCheckIn() {
         // 檢查選擇的時間是否小於當前時間
@@ -290,6 +288,11 @@ struct HomeView: View {
         if studyDate > currentDate {
             // 如果選擇的時間大於當前時間，顯示警告
             notificationMessage = "無法選擇未來時間進行打卡！"
+            notificationType = .warning
+            showingNotification = true
+            Vibration.warning.vibrate()
+        } else if studyDate < currentDate.addingTimeInterval(-600) {
+            notificationMessage = "只能記錄10分鐘內的學習時間！"
             notificationType = .warning
             showingNotification = true
             Vibration.warning.vibrate()
